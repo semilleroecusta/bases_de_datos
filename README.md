@@ -6,10 +6,10 @@
 
 La línea de Bases de Datos del semillero Computacional de la Universidad Santo Tomás, está creado con el fin de que los estudiantes de economía pertenecientes al semillero logren aprender y aplicar sus conocimientos entorno a la recolección, limpieza, transformación y visualización de los datos a través de herramientas como RStudio, Python y SQL.
 
-![pythonlogo](https://user-images.githubusercontent.com/69270562/115967007-cab90d00-a4f5-11eb-803f-a21c7819d977.png)
-![5d2eeb5d136a2e8373580725_azure](https://user-images.githubusercontent.com/69270562/115967010-cf7dc100-a4f5-11eb-9ff5-eee2cd0ecfaa.png)
-![Logor](https://user-images.githubusercontent.com/69270562/115967015-dd334680-a4f5-11eb-8bb7-52498787de2a.png)
-![Rm](https://user-images.githubusercontent.com/69270562/115966853-10c1a100-a4f5-11eb-9609-a8680c9a0c19.png)
+![pythonlogo](https://user-images.githubusercontent.com/69270562/115967355-e3c2bd80-a4f7-11eb-90dd-5e67779605c7.png)
+![5d2eeb5d136a2e8373580725_azure](https://user-images.githubusercontent.com/69270562/115967362-e7eedb00-a4f7-11eb-9d22-e7e445310ed3.png)
+![Logor](https://user-images.githubusercontent.com/69270562/115967365-e9b89e80-a4f7-11eb-8e7d-16f37513f105.png)
+![Rm](https://user-images.githubusercontent.com/69270562/115967367-eb826200-a4f7-11eb-836e-28b0f4baa570.png)
 
 **Objetivos a cumplir:**
 
