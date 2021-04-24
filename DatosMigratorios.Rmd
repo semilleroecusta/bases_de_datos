@@ -1,0 +1,425 @@
+---
+title: "Visualización de datos migratorios de Colombia"
+author: "Semillero Computacional USTA, Hasbleidy Andrea Sastoque"
+date: "2021-1"
+output: html_document
+---
+
+## Introducción
+
+La base de datos utilizada para el presente trabajo de investigación es suministrada por el Departamento Administrativo Nacional de Estadística (DANE), del cual se tomaron los datos de los ultimos dos Censos realizados en Colombia en el año 2005 y 2018. Las variables trabajadas son Departamento de residencia hace 5 años, Departamento acual, Edad y Sexo.
+
+
+```{r setup, include=FALSE}
+
+##Librerias Utilizadas:
+
+library(readxl)
+library(janitor)
+library(dplyr)
+library(ggplot2)
+library(wordcloud)
+library(RColorBrewer)
+
+#Importar el excel que contiene los datos generales, en este caso se encuentran en la hoja:"Datos" 
+MT2018 <- read_excel("C:/Users/HASBLEIDY/Desktop/Semillero/Migracion/MIGRACION2018.xlsx", sheet = "Datos")      # MT= Datos 2018 ;  MT2005 = Datos 2005
+
+#P = Porcentaje; M = Mujeres; H = Hombres; E = Emigrantes; I = Inmigrantes
+
+MT2018$PME <- round(MT2018$PME,2)  #round: dejar solamente los datos de la columna PME 
+MT2018$PMI <- round(MT2018$PMI,2)   #con dos decimales
+MT2018$PHI <- round(MT2018$PHI,2)   
+MT2018$PHE <- round(MT2018$PHE,2)
+
+MT2018$PE <- round(MT2018$PE,2)  
+MT2018$PI <- round(MT2018$PI,2)
+
+MT2005 <- read_excel("C:/Users/HASBLEIDY/Desktop/Semillero/Migracion/MIGRACION2005.xlsx", sheet = "Datos")
+
+MT2005$PME <- round(MT2005$PME,2)
+MT2005$PMI <- round(MT2005$PMI,2)
+MT2005$PHI <- round(MT2005$PHI,2)
+MT2005$PHE <- round(MT2005$PHE,2)
+
+MT2005$PE <- round(MT2005$PE,2)
+MT2005$PI <- round(MT2005$PI,2)
+
+```
+
+#### Departamentos trabajados:
+Cabe resaltar que Bogotá pertenece al departamento de Cundinamarca, sin embargo al ser la ciudad capital de Colombia el DANE suministra los datos de Bogotá y su respectivo departamento de manera separada. 
+
+```{r echo=FALSE, message=TRUE, paged.print=TRUE}
+MT2018$Departamento
+
+```
+
+###  <span style="color:blue"> Analisis Censo 2018 </span>
+
+### **Emigrantes**
+
+#### 10 departamentos con un mayor flujo de emigrantes en terminos absolutos.
+
+El porcentaje calculado es a partir de la poblacion total de cada departamento, es decir que de la poblacion total de Córdoba el 4.03% representa a la poblacion emigrante del departamento de los cuales el 50.19% son mujeres y el 49.81% son hombres.
+
+```{r echo=FALSE}
+#Nuevo data frame con los datos de los departamentos con mas de 58000 emigrantes
+
+em <- filter(MT2018,Emigrantes>=58000)
+em <- arrange(em, Emigrantes)  
+
+#con solo columnas en especifico
+em <- data.frame(em$Departamento,em$Emigrantes,em$PME, em$PHE, em$PE) 
+em <- em[order(-em$em.Emigrantes),] #ordenar los datos de mayor a menor
+colnames(em) <- c("Departamento","Emigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje total"); em
+```
+
+#### 10 departamentos con un mayor porcentaje de emigrantes en relación a su población total.
+
+```{r echo=FALSE}
+
+emp <- filter(MT2018,PE >= 6.10)
+emp <- arrange(emp, PE)
+
+emp <- data.frame(emp$Departamento,emp$Emigrantes,emp$PME,emp$PHE, emp$PE)
+emp <- emp[order(-emp$emp.PE),]
+colnames(emp) <- c("Departamento","Emigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje total") ;emp
+```
+
+La siguiente grafica indica que del total de la poblacion emigrante en Colombia en el año 2018, el 27.31% pertenece a Bogotá.
+
+```{r echo=FALSE}
+
+em <- select(MT2018, Departamento, Emigrantes)
+em$porcentaje <-  round(100*em$Emigrantes/sum(em$Emigrantes),2)
+em <- filter(em, porcentaje > 3)
+em <- em[-3,] #se elimino la fila de Bogotá
+
+ggplot(em, aes(x=reorder(Departamento,Emigrantes), y=porcentaje))+
+  scale_y_continuous(limit = c(0,8)) +
+  geom_bar(stat="identity", fill="steelblue")+
+  geom_text(aes(label=porcentaje), vjust=0.5,hjust=-1 ,  color="black", size=3.5)+
+  ggtitle("Departamentos con mayor flujo de emigrantes en el año 2018")+
+  xlab("Departamento")+
+  ylab("Emigrantes(%)")+
+  geom_text(data = NULL, x = 2, y = 7, label = "Bogotá= 27.31% del total")+
+  geom_text(data = NULL, x = 1.5, y = 7, label = "de la población emigrante")+
+  coord_flip()+
+  theme_bw()
+  
+```
+
+#### 10 departamentos con un menor flujo de emigrantes en terminos absolutos:
+
+Cabe resaltar que en la tabla aparece el departamento del Guaviare, pero debido a que su poblacion es menor, el flujo de emigrantes es poco por tal motivo es más relevante el destacar estos datos a partir de los porcentajes totales en relación a su población.
+
+```{r echo=FALSE}
+
+emm <- filter(MT2018,Emigrantes<=24000)
+emm <- arrange(emm, Emigrantes)
+emm <- data.frame(emm$Departamento, emm$Emigrantes, emm$PME,emm$PHE, emm$PE)
+colnames(emm) <- c("Departamento","Emigrantes", "Mujeres (%)", "Hombres (%)", "porcentaje") ;emm
+```
+
+#### 10 departamentos con menor porcentaje de emigrantes en relación a su población total.
+
+```{r echo=FALSE}
+
+emmp <- filter(MT2018,PE <= 4.26)
+emmp <- arrange(emmp, PE)
+emmp <- data.frame(emmp$Departamento,emmp$Emigrantes, emmp$PME,emmp$PHE, emmp$PE)
+colnames(emmp) <- c("Departamento", "Emigrantes", "Mujeres (%)", "Hombres (%)", "Porcentaje")
+
+emmp
+```
+
+Nube de palabras de los principales departamentos de llegada para las personas de Antioquia, si se desea observar los datos de los otros departamentos, desde el codigo solo se cambia el dato de Antioquia por el departamento que se quiera observar.  
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+#Para este codigo se utiliza la hoja: MatrizEm, si bien es similar a la matriz original, en este caso no tiene los datos de los no migrantes y las columnas muestran solo la informacion de los emigrantes
+
+M <- read_excel("C:/Users/HASBLEIDY/Desktop/Semillero/Migracion/MIGRACION2018.xlsx", sheet = "MatrizEm") #Columnas= Informacion de los emigrantes
+
+Mbog <- M[-11,] #se elimino la fila de cundinamarca, usar solo cuando se desee ver solo el caso de Bogota
+  
+wordcloud(words = M$DEPARTAMENTO, freq = M$Antioquia, 
+          random.order = T,colors = brewer.pal(8,"Dark2"),min.freq = 10)
+
+#### NOTA: Para bogota, se debe eliminar la fila de Cundinamarca para ver de una mejor manera los otros departamentos (Cundinamarca es el departamento que en su mayoria las personas de Bogota emigran):
+
+#Codigo para Bogota:
+
+#wc1 <- wordcloud(words = Mbog$DEPARTAMENTO, freq = Mbog$Bogota, random.order = T,colors = brewer.pal(8,"Dark2"))
+
+
+```
+
+### **Inmigrantes**
+
+#### 10 departamentos con un mayor flujo de inmigrantes en terminos absolutos
+
+```{r echo=FALSE}
+
+inm <- filter(MT2018,Inmigrantes>=53000)
+inm <- arrange(inm, Inmigrantes)
+
+inm <- data.frame(inm$Departamento,inm$Inmigrantes,inm$PMI, inm$PHI, inm$PI)
+inm <- inm[order(-inm$inm.Inmigrantes),] #ordenar los datos de mayor a menor
+colnames(inm) <- c("Departamento","Inmigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje total") ;inm
+```
+
+#### 10 departamentos con un mayor porcentaje de inmigrantes en relación a su población total.
+
+```{r echo=FALSE}
+
+inmp <- filter(MT2018,PI >= 5.70)
+inmp <- arrange(inmp, PI)
+
+inmp <- data.frame(inmp$Departamento,inmp$Inmigrantes,inmp$PMI,inmp$PHI, inmp$PI)
+inmp <- inmp[order(-inmp$inmp.PI),]
+colnames(inmp) <- c("Departamento","Inmigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje total") ;inmp
+```
+
+La siguiente grafica indica que del total de la población inmigrante en Colombia, el 19.46% pertece a Cundinamarca.
+
+```{r echo=FALSE}
+
+inm <- select(MT2018, Departamento, Inmigrantes)
+inm$porcentaje <- round(100*inm$Inmigrantes/sum(inm$Inmigrantes),2)
+inm <- filter(inm, porcentaje > 2.5)
+inm <- inm[-c(3,7),]
+  
+ggplot(inm, aes(x=reorder(Departamento,Inmigrantes), y=porcentaje))+
+  geom_bar(stat="identity", fill="steelblue")+
+  scale_y_continuous(limit = c(0,10)) +
+  geom_text(aes(label=porcentaje), vjust=0.5,hjust=-1 ,  color="black", size=3.5)+
+  ggtitle("Departamentos con mayor flujo de inmigrantes en el año 2018")+
+  ylab("Inmigrantes(%)")+
+  xlab("Departamento")+
+  geom_text(data = NULL, x = 2, y = 8.5, label = "Cundinamarca= 19.46%")+
+  geom_text(data = NULL, x = 1.5, y = 9, label = "Bogotá= 16.37% ")+
+  coord_flip()+
+  theme_bw()
+
+```
+
+#### 10 departamentos con un menor flujo de inmigrantes en terminos absolutos
+
+Cabe resaltar que Guaviare tambien sale, debido a que si se observan los datos del total de inmigrantes, la cantidad de los mismos en este departamento son menores en relación a otros departamentos del pais, por tal motivo tambien se colocan los datos en relación a la población total.
+
+```{r echo=FALSE}
+
+inmm <- filter(MT2018,Inmigrantes<=19000)
+inmm <- arrange(inmm, Inmigrantes)
+
+inmm <- data.frame(inmm$Departamento,inmm$Inmigrantes,inmm$PMI,inmm$PHI, inmm$PI)
+colnames(inmm) <- c("Departamento","Inmigrantes", "Mujeres (%)", "Hombres (%)", "Porcentaje") ;inmm
+```
+
+
+#### 10 departamentos con menor porcentaje de inmigrantes en relacion a su poblacion total.
+
+Como se observa para este caso, el departamento de Guaviare no sale en los resultados.
+
+```{r echo=FALSE}
+
+inmmp <- filter(MT2018,PI <= 3.09)
+inmmp <- arrange(inmmp, PI)
+inmmp <- data.frame(inmmp$Departamento,inmmp$Inmigrantes,
+                    inmmp$PMI,inmmp$PHI,inmmp$PI)
+colnames(inmmp) <- c("Departamento", "Inmigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje")
+
+inmmp
+```
+
+Nube de palabras de los principales departamientos de las personas que inmigran a Antioquia.Si se desea observar los datos de los otros departamentos, desde el codigo solo se cambia el dato de Antioquia por el departamento que se quiera observar.
+
+```{r echo=TRUE, warning=FALSE}
+
+MI <- read_excel("C:/Users/HASBLEIDY/Desktop/Semillero/Migracion/MIGRACION2018.xlsx", sheet = "MatrizInm") #Columnas= Informacion de los inmigrantes
+  
+wordcloud(words = MI$DEPARTAMENTO, freq = MI$Antioquia,
+          random.order = T,colors = brewer.pal(8,"Dark2"))
+
+#NOTA: Para Bogotá el dato con mayor frecuencia es Cundinamarca
+```
+
+
+###  <span style="color:blue"> Analisis Censo 2005 </span>###
+
+### **Emigrantes**
+
+#### 10 departamentos con un mayor flujo de emigrantes en terminos absolutos.
+
+```{r echo=FALSE}
+
+em2005 <- filter(MT2005,Emigrantes>=56000)
+em2005 <- arrange(em2005, Emigrantes)
+
+em2005 <- data.frame(em2005$Departamento,em2005$Emigrantes,em2005$PME, em2005$PHE, em2005$PE)
+em2005 <- em2005[order(-em2005$em2005.Emigrantes),] #ordenar los datos de mayor a menor
+colnames(em2005) <- c("Departamento","Emigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje total"); em2005
+
+```
+
+#### 10 departamentos con un mayor porcentaje de emigrantes en relación a su población total.
+
+```{r echo=FALSE}
+
+emp2005 <- filter(MT2005,PE >= 6.53)
+emp2005 <- arrange(emp2005, PE)
+
+emp2005 <- data.frame(emp2005$Departamento,emp2005$Emigrantes,emp2005$PME,emp2005$PHE, emp2005$PE)
+emp2005 <- emp2005[order(-emp2005$emp2005.PE),] 
+colnames(emp2005) <- c("Departamento","Emigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje total")
+emp2005
+
+```
+
+La siguiente grafica indica que del total de la poblacion emigrante en Colombia en el año 2005, el 18.01% pertenece a Bogotá.
+
+```{r echo=FALSE}
+
+em2005 <- select(MT2005, Departamento, Emigrantes)
+em2005$porcentaje <- round(100*em2005$Emigrantes/sum(em2005$Emigrantes),2)
+em2005 <- filter(em2005, porcentaje > 3)
+em2005 <- em2005[-3,] #se elimino la fila de Bogotá
+
+ggplot(em2005, aes(x=reorder(Departamento,Emigrantes), y=porcentaje))+
+  scale_y_continuous(limit = c(0,8)) +
+  geom_bar(stat="identity", fill="steelblue")+
+  geom_text(aes(label=porcentaje), vjust=0.5,hjust=-0.8 ,  color="black", size=3.5)+
+  ggtitle("Departamentos con mayor flujo de emigrantes en el año 2005")+
+  xlab("Departamento")+
+  ylab("Emigrantes(%)")+
+  geom_text(data = NULL, x = 2, y = 7, label = "Bogotá= 18.01% del total")+
+  geom_text(data = NULL, x = 1.5, y = 7, label = "de la población emigrante")+
+  coord_flip()+
+  theme_bw()
+
+```
+
+#### 10 departamentos con un menor flujo de emigrantes en terminos absolutos
+
+```{r echo=FALSE}
+
+emm2005 <- filter(MT2005,Emigrantes<=20000)
+emm2005 <- arrange(emm2005, Emigrantes)
+
+emm2005 <- data.frame(emm2005$Departamento,emm2005$Emigrantes, emm2005$PME,emm2005$PHE, emm2005$PE)
+colnames(emm2005) <- c("Departamento","Emigrantes", "Mujeres (%)", "Hombres (%)", "Porcentaje")
+
+emm2005
+```
+
+##### 10 departamentos con menor porcentaje de emigrantes en relación a su población total.
+
+```{r echo=FALSE}
+
+emmp2005 <- filter(MT2005,PE <= 4.0)
+emmp2005 <- arrange(emmp2005, PE)
+emmp2005 <- data.frame(emmp2005$Departamento,emmp2005$Emigrantes,emmp2005$PME,emmp2005$PHE, emmp2005$PE)
+colnames(emmp2005) <- c("Departamento", "Emigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje")
+
+emmp2005
+```
+
+Nube de palabras de los principales departamentos de llegada para las personas de Antioquia, si se desea observar los datos de los otros departamentos, desde el codigo solo se cambia el dato de Antioquia por el departamento que se quiera observar.  
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+
+M2005 <- read_excel("C:/Users/HASBLEIDY/Desktop/Semillero/Migracion/MIGRACION2005.xlsx", sheet = "MatrizEm") #Columnas= Informacion de los emigrantes
+  
+wordcloud(words = M2005$Departamento, freq = M2005$Antioquia,
+          random.order = T,colors = brewer.pal(8,"Dark2"))
+```
+
+### **Inmigrantes**
+
+#### 10 departamentos con un mayor flujo de inmigrantes en terminos absolutos
+
+```{r echo=FALSE}
+
+inm2005 <- filter(MT2005,Inmigrantes>=45000)
+inm2005 <- arrange(inm2005, Inmigrantes)
+inm2005 <- data.frame(inm2005$Departamento,inm2005$Inmigrantes,inm2005$PMI, inm2005$PHI, inm2005$PI)
+inm2005 <- inm2005[order(-inm2005$inm2005.Inmigrantes),] #ordenar los datos de mayor a menor
+colnames(inm2005) <- c("Departamento","Inmigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje total")
+inm2005
+
+```
+
+##### 10 departamentos con un mayor porcentaje de inmigrantes en relación a su población total.
+
+```{r echo=FALSE}
+
+inmp2005 <- filter(MT2005,PI>= 5.40) #Seleccionar los datos que estan por encima de 5.40
+inmp2005 <- arrange(inmp2005, PI)
+
+inmp2005 <- data.frame(inmp2005$Departamento,inmp2005$Inmigrantes,inmp2005$PMI,inmp2005$PHI, inmp2005$PI) #Solo trabajar con esas columnas
+inmp2005 <- inmp2005[order(-inmp2005$inmp2005.PI),] 
+colnames(inmp2005) <- c("Departamento","Inmigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje total")
+inmp2005
+
+```
+
+La siguiente grafica indica que del total de la poblacion inmigrante en Colombia, el 21.73% pertece a Bogotá.
+
+```{r echo=FALSE}
+inm2005 <- select(MT2005, Departamento, Inmigrantes)
+inm2005$porcentaje <- round(100*inm2005$Inmigrantes/sum(inm2005$Inmigrantes),2)
+inm2005<- filter(inm2005, porcentaje > 2.5)
+inm2005 <- inm2005[-c(3,6),] #Eliminar la fila de cundinamarca y bogota que estan en la posicion 3 y 6
+  
+ggplot(inm2005, aes(x=reorder(Departamento,Inmigrantes), y=porcentaje))+
+  geom_bar(stat="identity", fill="steelblue")+
+  scale_y_continuous(limit = c(0,10)) +
+  geom_text(aes(label=porcentaje), vjust=0.5,hjust=-1 ,  color="black", size=3.5)+
+  ggtitle("Departamentos con mayor flujo de inmigrantes en el año 2005")+
+  ylab("Inmigrantes(%)")+
+  xlab("Departamento")+
+  geom_text(data = NULL, x = 2, y = 9, label = "Bogotá= 21.73%")+
+  geom_text(data = NULL, x = 1.5, y = 8.5, label = "Cundinamarca= 12.32%")+
+  coord_flip()+
+  theme_bw() 
+
+```
+
+#### 10 departamentos con un menor flujo de inmigrantes en terminos absolutos
+
+```{r echo=FALSE}
+
+inmm2005 <- filter(MT2005,Inmigrantes<=14000)
+inmm2005 <- arrange(inmm2005, Inmigrantes)
+
+inmm2005 <- data.frame(inmm2005$Departamento,inmm2005$Inmigrantes,inmm2005$PMI,inmm2005$PHI, inmm2005$PI)
+colnames(inmm2005) <- c("Departamento","Inmigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje")
+
+inmm2005
+
+```
+
+
+#### 10 departamentos con menor porcentaje de inmigrantes en relación a su población total.
+
+```{r echo=FALSE}
+
+inmmp2005 <- filter(MT2005,PI <= 2.81)
+inmmp2005 <- arrange(inmmp2005, PI)
+inmmp2005 <- data.frame(inmmp2005$Departamento,inmmp2005$Inmigrantes, inmmp2005$PMI,inmmp2005$PHI,inmmp2005$PI)
+colnames(inmmp2005) <- c("Departamento", "Inmigrantes", "Mujeres (%)", "Hombres (%)","Porcentaje")
+
+inmmp2005
+```
+
+Nube de palabras de los principales departamientos de las personas que inmigran a Antioquia.Si se desea observar los datos de los otros departamentos, desde el codigo solo se cambia el dato de Antioquia por el departamento que se quiera observar.
+
+```{r echo=TRUE, warning=FALSE}
+
+MI2005 <- read_excel("C:/Users/HASBLEIDY/Desktop/Semillero/Migracion/MIGRACION2005.xlsx", sheet = "MatrizInm") #Columnas= Informacion de los inmigrantes
+  
+wordcloud(words = MI2005$Departamento, freq = MI2005$Antioquia,
+          random.order = T,colors = brewer.pal(8,"Dark2"))
+```
