@@ -18,3 +18,13 @@ La línea de Bases de Datos del semillero Computacional de la Universidad Santo 
 - Trabajar en conjunto con la línea de Inferencia Causal, suministrando la visualización y organización de los datos o variables que ellos requieran para su modelación.
 
 - Limpiar Bases de Datos generales que sean de utilidad en un futuro, iniciando con la Gran Encuesta Integrada de Hogares (GEIH) teniendo como punto de referencia la temática de Economía Laboral.
+
+**Recursos de utilidad**
+
+- Curso Básico de Python: [Links](https://www.coursera.org/learn/programacion-python?)
+
+- Curso Básico de R: [Links](https://www.coursera.org/learn/intro-data-science-programacion-estadistica-r#syllabus)
+
+- Libro Python Data Science Handbook: [Links](https://jakevdp.github.io/PythonDataScienceHandbook/?fbclid=IwAR0JSoQr3v1kv5BTf4vOs0JshUOeakcMOJeQc5fQNjEb8Y7W0R87vNyLlqY)
+
+- Libro Hands On Programming with R: [Links](https://rstudio-education.github.io/hopr/)
