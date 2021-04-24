@@ -21,10 +21,10 @@ La línea de Bases de Datos del semillero Computacional de la Universidad Santo 
 
 **Recursos de utilidad**
 
-- Curso Básico de Python: [Links](https://www.coursera.org/learn/programacion-python?)
+- Curso "Programación en Python": [Links](https://www.coursera.org/learn/programacion-python?)
 
-- Curso Básico de R: [Links](https://www.coursera.org/learn/intro-data-science-programacion-estadistica-r#syllabus)
+- Curso "Introducción a Data Science: Programación Estadística con R": [Links](https://www.coursera.org/learn/intro-data-science-programacion-estadistica-r#syllabus)
 
-- Libro Python Data Science Handbook: [Links](https://jakevdp.github.io/PythonDataScienceHandbook/?fbclid=IwAR0JSoQr3v1kv5BTf4vOs0JshUOeakcMOJeQc5fQNjEb8Y7W0R87vNyLlqY)
+- Libro "Python Data Science Handbook": [Links](https://jakevdp.github.io/PythonDataScienceHandbook/?fbclid=IwAR0JSoQr3v1kv5BTf4vOs0JshUOeakcMOJeQc5fQNjEb8Y7W0R87vNyLlqY)
 
-- Libro Hands On Programming with R: [Links](https://rstudio-education.github.io/hopr/)
+- Libro "Hands On Programming with R": [Links](https://rstudio-education.github.io/hopr/)
